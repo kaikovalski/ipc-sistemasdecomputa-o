@@ -33,16 +33,13 @@ def executar_ipc():
 
     try:
         if modo == "pipes":
-            # O caminho para a pasta onde os executáveis estão
             pasta_dos_executaveis = "../executaveis/"
-            
-            # O caminho COMPLETO para o executável que vamos chamar
             caminho_completo_pai = "../executaveis/backendpipe.exe"
             
             resultado = subprocess.run(
-                [caminho_completo_pai, mensagem], # USAMOS O CAMINHO COMPLETO AQUI
+                [caminho_completo_pai, mensagem], 
                 capture_output=True, text=True, check=True, encoding="utf-8",
-                cwd=pasta_dos_executaveis # E AINDA DEFINIMOS O DIRETÓRIO DE TRABALHO AQUI
+                cwd=pasta_dos_executaveis 
             )
             adicionar_log(resultado.stdout.strip())
         
@@ -50,7 +47,6 @@ def executar_ipc():
             global processo_servidor
             if not processo_servidor or processo_servidor.poll() is not None:
                 adicionar_log(">>> Iniciando o Servidor de Socket...")
-                # Caminho corrigido para o executável do servidor
                 caminho_servidor = "../executaveis/socketservidor.exe"
                 processo_servidor = subprocess.Popen(
                     [caminho_servidor],
@@ -62,7 +58,6 @@ def executar_ipc():
                 adicionar_log(">>> Servidor no ar. Agora, digite uma mensagem e clique em 'Executar Ação' novamente para enviar como cliente.")
             else:
                 adicionar_log(">>> Conectando o Cliente de Socket...")
-                # Caminho corrigido para o executável do cliente
                 caminho_cliente = "../executaveis/socketcliente.exe"
                 resultado = subprocess.run(
                     [caminho_cliente, mensagem],
@@ -74,7 +69,6 @@ def executar_ipc():
             global processo_escritor
             if not processo_escritor or processo_escritor.poll() is not None:
                 adicionar_log(">>> Iniciando o Escritor na Memória...")
-                # Caminho corrigido para o executável do escritor
                 caminho_escritor = "../executaveis/memoriaesc.exe"
                 processo_escritor = subprocess.Popen(
                     [caminho_escritor],
@@ -86,7 +80,6 @@ def executar_ipc():
                 adicionar_log(">>> Escritor no ar. Clique em 'Executar Ação' novamente para ler a memória.")
             else:
                 adicionar_log(">>> Executando o Leitor da Memória...")
-                # Caminho corrigido para o executável do leitor
                 caminho_leitor = "../executaveis/memorialeitor.exe"
                 resultado = subprocess.run(
                     [caminho_leitor], capture_output=True, text=True, check=True, encoding="utf-8"
@@ -99,12 +92,11 @@ def executar_ipc():
     except Exception as e:
         adicionar_log(f"Ocorreu um erro: {e}")
 
-# --- CONFIGURAÇÃO DA JANELA GRÁFICA (GUI) ---
+# CONFIGURAÇÃO DA JANELA GRÁFICA
 janela = tk.Tk()
 janela.title("Projeto Final - Comunicação Entre Processos")
 janela.geometry("800x600")
 
-# --- FRAME DE CONTROLE (TOPO) ---
 frame_controle = tk.Frame(janela)
 frame_controle.pack(pady=10, padx=10, fill='x')
 
@@ -114,7 +106,6 @@ opcoes = [("Pipes", "pipes"), ("Sockets", "sockets"), ("Memória Compartilhada",
 for texto, modo in opcoes:
     tk.Radiobutton(frame_controle, text=texto, variable=modo_ipc, value=modo).pack(side=tk.LEFT)
 
-# --- FRAME DE AÇÃO (MEIO) ---
 frame_acao = tk.Frame(janela)
 frame_acao.pack(pady=10, padx=10, fill='x')
 
@@ -124,12 +115,10 @@ campo_mensagem.pack(side=tk.LEFT, expand=True, fill='x', padx=5)
 botao_executar = tk.Button(frame_acao, text="Executar Ação", command=executar_ipc)
 botao_executar.pack(side=tk.LEFT, padx=5)
 
-# --- ÁREA DE LOG (BAIXO) ---
 log_area = scrolledtext.ScrolledText(janela, wrap=tk.WORD, height=25)
 log_area.pack(pady=10, padx=10, expand=True, fill='both')
 log_area.configure(state='disabled')
 
-# --- FUNÇÃO DE SAÍDA SEGURA ---
 def ao_fechar():
     """ Garante que os processos em segundo plano sejam encerrados ao fechar a janela """
     if messagebox.askokcancel("Sair", "Você quer sair? Isso encerrará todos os processos em segundo plano."):
